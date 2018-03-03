@@ -1,0 +1,17 @@
+- name: Add user
+  user:
+    name: "{{ username }}"
+    shell: /bin/bash
+    createhome: yes
+
+- name: Set key
+  authorized_key:
+    user: "{{ username }}"
+    state: present
+    key: "{{ lookup('file', 'files/keys/id_rsa.' + username + '.pub') }}"
+
+- name: Add sudo
+  copy:
+    dest: "/etc/sudoers.d/090_user_{{ username }}"
+    content: "{{ username }} ALL=(ALL) NOPASSWD: ALL"
+  when: add_in_sudoers
